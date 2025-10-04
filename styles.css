@@ -13,11 +13,12 @@ body {
     color: #333;
     overflow-x: hidden;
 }
-
+ 
 /* Responsive logo scale: better mobile/tablet scaling */
 :root { 
     --logo-scale: clamp(0.5, (100vw / 1440), 1);
     --header-padding: clamp(16px, 4vw, 100px);
+    --mobile-logo-scale: 0.7; /* Scale down logo on mobile */
 }
 
 /* Header Styles */
@@ -55,6 +56,7 @@ body {
     width: calc(231.7px * var(--logo-scale)); /* responsive logical size */
     height: calc(58px * var(--logo-scale));
     position: relative;
+    transform-origin: left center;
 }
 
 /* Composite logo built from vectors */
@@ -164,57 +166,52 @@ body {
 
 /* Override desktop styles for mobile */
 @media (max-width: 768px) {
+    /* HEADER: normalize layout */
+    .header { 
+        height: 70px; /* Slightly shorter header */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06); 
+    }
+    .nav-container { 
+        padding: 0 16px; 
+        gap: 10px; 
+        justify-content: space-between; 
+    }
+    .flex-spacer { display: none; }
+    
+    /* Scale down logo on mobile */
+    .logo {
+        transform: scale(var(--mobile-logo-scale));
+        margin-left: -8px; /* Compensate for left gap when scaled */
+    }
+    
+    /* Ensure logo text is properly scaled */
+    .logo-text,
+    .logo-canvas {
+        transform: scale(1) !important; /* Override any other transforms */
+    }
+
+    /* Toggle visible on mobile */
+    .mobile-menu-toggle { display: flex !important; z-index: 1100; }
+
+    /* Collapse desktop menu and use overlay panel */
     .nav-menu {
-        display: none !important;
-        position: fixed !important;
-        top: 80px !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        background: #ffffff !important;
-        flex-direction: column !important;
-        gap: 0 !important;
-        padding: 0 !important;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-        border-top: 1px solid #f0f0f0 !important;
-        z-index: 1100 !important;
-        max-height: calc(100vh - 80px) !important;
-        overflow-y: auto !important;
+        display: none;
+        position: fixed;
+        top: 80px;
+        left: 0; right: 0; bottom: 0;
+        background: #fff;
+        flex-direction: column;
+        padding: 12px 16px 24px;
+        gap: 0;
+        overflow-y: auto;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        z-index: 1050;
     }
+    .nav-menu li { border-bottom: 1px solid #f2f2f2; }
+    .nav-menu .nav-link { display: block; padding: 16px 8px; color: #333; }
 
-    .nav-menu li {
-        list-style: none !important;
-        border-bottom: 1px solid #f5f5f5 !important;
-        display: block !important;
-        width: 100% !important;
-    }
-
-    .nav-menu .nav-link {
-        display: block !important;
-        padding: 16px 20px !important;
-        color: #333 !important;
-        text-decoration: none !important;
-        font-weight: 500 !important;
-        font-size: 16px !important;
-        transition: all 0.2s ease !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .nav-menu .nav-link:hover,
-    .nav-menu .nav-link:focus {
-        background-color: #f8f9fa !important;
-        color: #ff4757 !important;
-        padding-left: 24px !important;
-    }
-
-    /* When toggled open */
-    body.menu-open .nav-menu {
-        display: flex !important;
-        animation: slideDown 0.3s ease-out !important;
-    }
-    body.menu-open { overflow: hidden !important; }
+    /* Open state */
+    body.menu-open .nav-menu { display: flex; }
 }
 
 .nav-link {
@@ -408,6 +405,7 @@ body {
 .hero-description {
     font-size: 16px;
     color: #5d5d5d;
+
     margin-bottom: 32px;
     line-height: 1.6;
     font-family: figtree;
@@ -511,10 +509,10 @@ body {
 }
 
 .rating-head { display: flex;  flex-direction: column; align-items: left;}
-.rating-score { font-size: 64px; font-weight: semibold; color: #1CB098; line-height: 1; font-family: inter; margin-right: 12px; }
+.rating-score { font-size: 32px; font-weight: semibold; color: #1CB098; line-height: 1; font-family: inter; margin-right: 12px; }
 
 .rating-stars {
-    margin-bottom: px;
+    margin-bottom: 0px;
 }
 
 .star {
@@ -522,7 +520,7 @@ body {
     font-size: 18px;
 }
 
-.rating-text { font-size: 24px; color: #000000; font-weight: 500; font-family: figtree; }
+.rating-text { font-size: 12px; color: #000000; font-weight: 500; font-family: figtree; }
 
 .resume-count-card {
     position: absolute;
@@ -861,6 +859,10 @@ body {
         transform: translateX(100%);
         transition: transform 0.3s ease;
     }
+    .feature-title {
+        margin-bottom: 0px;
+        line-height: 1;
+    }
 
     body.menu-open .nav-menu {
         transform: translateX(0);
@@ -881,8 +883,41 @@ body {
     .hero-description {
         font-size: 11px;
         line-height: 1.5;
+        margin: 0 auto;
     }
     
+    /* Center the entire hero on mobile */
+    .hero { text-align: center; }
+    .hero-container { grid-template-columns: 1fr; gap: 20px; align-items: center; }
+    .hero-content { text-align: center; margin: 0 auto; }
+    .hero-buttons { justify-content: center;
+                     margin-top: 20px; }
+
+    /* Keep image visually pinned to bottom and centered */
+    .hero-image { position: relative; height: clamp(320px, 85vw, 480px); align-items: flex-end; }
+    .woman-image {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: clamp(220px, 70vw, 340px);
+        height: clamp(280px, 80vw, 420px);
+        background-position: bottom center;
+    }
+
+    /* Absolute banners: scale down and center */
+    .rating-card,
+    .resume-count-card {
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) scale(0.9);
+        width: min(90vw, 340px);
+        padding: 14px 12px;
+    }
+
+    .rating-card { top: 10px; }
+    .resume-count-card { bottom: 10px; top: auto; }
+
     .btn-secondary,
     .btn-primary {
         padding: 10px 16px;
@@ -981,9 +1016,6 @@ body {
     }
     
     .rating-card {
-        /* Tablet: keep visible with moderate scaling */
-        left: -30px;
-        top: 350px; /* keep consistent position */
         transform: scale(0.85);
         transform-origin: top left;
     }
@@ -1019,9 +1051,6 @@ body {
         padding: 0 60px; 
     }
     .rating-card {
-        /* Medium screens: slightly smaller */
-        left: -35px;
-        top: 350px; /* keep consistent position */
         transform: scale(0.9);
         transform-origin: top left;
     }
@@ -1054,7 +1083,6 @@ body {
     .rating-card {
         /* Large screens: full size at your specified position */
         left: calc(729px - 600px); /* Adjust relative to hero container */
-        top: 350px; /* keep consistent position */
         transform: scale(1);
     }
     
